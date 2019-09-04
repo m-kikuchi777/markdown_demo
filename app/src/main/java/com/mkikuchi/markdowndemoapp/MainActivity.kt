@@ -2,6 +2,7 @@ package com.mkikuchi.markdowndemoapp
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import io.noties.markwon.Markwon
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.BufferedReader
@@ -16,24 +17,12 @@ class MainActivity : AppCompatActivity() {
 
         val markwon = Markwon.create(this)
 
-        try {
-            val cheatsheet = assets.open("Markdown-Here-Cheatsheet.md")
-            val br = BufferedReader(InputStreamReader(cheatsheet))
-
-            var text = ""
-
-            while (true) {
-                val str = br.readLine()
-                if (str != null) {
-                    text += str + "\n"
-                } else {
-                    break
-                }
+        val node = markwon.parse(
+            BufferedReader(
+                InputStreamReader(resources.openRawResource(R.raw.markdown_sample))).use {
+                    it.readText()
             }
-
-            markwon.setMarkdown(markdownTextView, text)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        )
+        markwon.setParsedMarkdown(markdownTextView, markwon.render(node))
     }
 }
